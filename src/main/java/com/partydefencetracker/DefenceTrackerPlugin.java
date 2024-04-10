@@ -127,7 +127,6 @@ public class DefenceTrackerPlugin extends Plugin
 	private String boss = "";
 	private int bossIndex = 0;
 	private double bossDef = -1;
-
 	private DefenceInfoBox box = null;
 	private VulnerabilityInfoBox vulnBox = null;
 	private SpritePixels vuln = null;
@@ -516,6 +515,21 @@ public class DefenceTrackerPlugin extends Plugin
 		}
 	}
 
+	private int getScaledMagicLevel()
+	{
+		int scaledMagicLevel = (int) BossInfo.getBaseMagic(boss);
+		if(coxBosses.contains(boss))
+		{
+			int partySize = client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT);
+			scaledMagicLevel = scaledMagicLevel * (((int)(Math.sqrt(partySize-1)))*7+partySize+99)/100;
+			if(inCm)
+			{
+				scaledMagicLevel = (int)(1.5*scaledMagicLevel);
+			}
+		}
+		return scaledMagicLevel;
+	}
+
 	private void calculateDefence(SpecialWeapon weapon, int hit)
 	{
 		switch (weapon)
@@ -581,6 +595,12 @@ public class DefenceTrackerPlugin extends Plugin
 					{
 						bossDef = BossInfo.getBaseDefence(boss) * .85;
 					}
+				}
+				break;
+			case TONALZTICS_OF_RALOS:
+				for(int i = 0; i < hit; i++)
+				{
+					bossDef -= (int)(getScaledMagicLevel() * .1);
 				}
 				break;
 		}
