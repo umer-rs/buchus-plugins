@@ -507,12 +507,19 @@ public class DefenceTrackerPlugin extends Plugin
 		}
 		else if (coxBosses.contains(boss))
 		{
-			bossDef = bossDef * (1 + (.01 * (client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT) - 1)));
-			if (inCm)
-			{
-				bossDef = bossDef * (boss.contains("Tekton") ? 1.2 : 1.5);
-			}
+			bossDef = getCoxScaledDefenceLevel(bossName, (int) bossDef);
 		}
+	}
+
+	private int getCoxScaledDefenceLevel(String bossName, int baseDef)
+	{
+		int partySize = getCoxPartySize();
+		baseDef = (int) (baseDef * (((int) Math.sqrt(partySize - 1) + ((partySize - 1) * 7 / 10 + 100)) / 100.0));
+		if (inCm)
+		{
+			baseDef = (int) (baseDef * (bossName.contains("Tekton") ? partySize > 3 ? 1.35 : 1.2 : 1.5));
+		}
+		return baseDef;
 	}
 
 	private int getScaledMagicLevel()
@@ -520,7 +527,7 @@ public class DefenceTrackerPlugin extends Plugin
 		int scaledMagicLevel = (int) BossInfo.getBaseMagic(boss);
 		if(coxBosses.contains(boss))
 		{
-			int partySize = client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT);
+			int partySize = getCoxPartySize();
 			scaledMagicLevel = scaledMagicLevel * (((int)(Math.sqrt(partySize-1)))*7+partySize+99)/100;
 			if(inCm)
 			{
@@ -654,6 +661,10 @@ public class DefenceTrackerPlugin extends Plugin
 	public boolean isInCoxLobby()
 	{
 		return client.getMapRegions() != null && client.getMapRegions().length > 0 && Arrays.stream(client.getMapRegions()).anyMatch((s) -> s == 4919);
+	}
+
+	private int getCoxPartySize() {
+		return client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT);
 	}
 
 	public void enableRequiredPlugins(String pluginName)
