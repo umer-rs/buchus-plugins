@@ -548,7 +548,14 @@ public class DefenceTrackerPlugin extends Plugin
 				}
 				break;
 			case ELDER_MAUL:
-				if (hit > 0)
+				if (hit == 0)
+				{
+					if (client.getVarbitValue(Varbits.IN_RAID) == 1 && boss.equalsIgnoreCase("Tekton"))
+					{
+						bossDef -= bossDef * .05;
+					}
+				}
+				else
 				{
 					bossDef -= bossDef * .35;
 				}
