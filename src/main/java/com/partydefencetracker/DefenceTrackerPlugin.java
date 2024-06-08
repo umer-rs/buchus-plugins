@@ -149,6 +149,8 @@ public class DefenceTrackerPlugin extends Plugin
 
 	private QueuedNpc queuedNpc = null;
 
+	private final List<SpecialCounterUpdate> specialList = new ArrayList<>();
+
 	Map<String, ArrayList<Integer>> bossRegions = new HashMap<String, ArrayList<Integer>>()
 	{{
 		put("The Maiden of Sugadinti", new ArrayList<>(Collections.singletonList(12613)));
@@ -246,9 +248,54 @@ public class DefenceTrackerPlugin extends Plugin
 		}
 	}
 
+	private void processSpecialAttack(SpecialCounterUpdate e)
+	{
+		int hit = e.getHit();
+		int world = e.getWorld();
+		SpecialWeapon weapon = e.getWeapon();
+		int index = e.getNpcIndex();
+		NPC npc = client.getCachedNPCs()[index];
+
+		clientThread.invoke(() ->
+		{
+			if ((npc != null && npc.getName() != null && BossInfo.getBoss(npc.getName()) != null) || bossIndex == index)
+			{
+				if (bossIndex != index)
+				{
+					String bossName = npc.getName();
+
+					if (!boss.equalsIgnoreCase(bossName) || (bossName.contains("Tekton") && !boss.equalsIgnoreCase("Tekton")))
+					{
+						baseDefence(bossName, index);
+						calculateQueue(index);
+					}
+				}
+
+				if (inBossRegion() && world == client.getWorld())
+				{
+					calculateDefence(weapon, hit);
+					updateDefInfobox();
+				}
+			}
+			else
+			{
+				if (queuedNpc == null || queuedNpc.index != index)
+				{
+					queuedNpc = new QueuedNpc(index);
+				}
+				queuedNpc.queuedSpecs.add(new QueuedNpc.QueuedSpec(weapon, hit));
+			}
+		});
+	}
+
 	@Subscribe
 	public void onGameTick(GameTick e)
 	{
+		for(SpecialCounterUpdate specialCounterUpdate : specialList)
+		{
+			processSpecialAttack(specialCounterUpdate);
+		}
+		specialList.clear();
 		if (partyService.isInParty())
 		{
 			for (NPC n : client.getNpcs())
@@ -333,42 +380,14 @@ public class DefenceTrackerPlugin extends Plugin
 	@Subscribe
 	public void onSpecialCounterUpdate(SpecialCounterUpdate e)
 	{
-		int hit = e.getHit();
-		int world = e.getWorld();
-		SpecialWeapon weapon = e.getWeapon();
-		int index = e.getNpcIndex();
-		NPC npc = client.getCachedNPCs()[index];
-
-		clientThread.invoke(() ->
+		if(e.getWeapon() == SpecialWeapon.ELDER_MAUL)
 		{
-			if ((npc != null && npc.getName() != null && BossInfo.getBoss(npc.getName()) != null) || bossIndex == index)
-			{
-				if (bossIndex != index)
-				{
-					String bossName = npc.getName();
-
-					if (!boss.equalsIgnoreCase(bossName) || (bossName.contains("Tekton") && !boss.equalsIgnoreCase("Tekton")))
-					{
-						baseDefence(bossName, index);
-						calculateQueue(index);
-					}
-				}
-
-				if (inBossRegion() && world == client.getWorld())
-				{
-					calculateDefence(weapon, hit);
-					updateDefInfobox();
-				}
-			}
-			else
-			{
-				if (queuedNpc == null || queuedNpc.index != index)
-				{
-					queuedNpc = new QueuedNpc(index);
-				}
-				queuedNpc.queuedSpecs.add(new QueuedNpc.QueuedSpec(weapon, hit));
-			}
-		});
+			specialList.add(0, e);
+		}
+		else
+		{
+			specialList.add(e);
+		}
 	}
 
 	@Subscribe
