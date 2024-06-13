@@ -606,7 +606,10 @@ public class DefenceTrackerPlugin extends Plugin
 				break;
 			case BONE_DAGGER:
 			case DORGESHUUN_CROSSBOW:
-				bossDef -= hit;
+				if (bossDef >= BossInfo.getBaseDefence(boss))
+				{
+					bossDef -= hit;
+				}
 				break;
 			case ACCURSED_SCEPTRE:
 				if (hit > 0)
