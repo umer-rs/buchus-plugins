@@ -291,7 +291,7 @@ public class DefenceTrackerPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick e)
 	{
-		for(SpecialCounterUpdate specialCounterUpdate : specialList)
+		for (SpecialCounterUpdate specialCounterUpdate : specialList)
 		{
 			processSpecialAttack(specialCounterUpdate);
 		}
@@ -380,7 +380,7 @@ public class DefenceTrackerPlugin extends Plugin
 	@Subscribe
 	public void onSpecialCounterUpdate(SpecialCounterUpdate e)
 	{
-		if(e.getWeapon() == SpecialWeapon.ELDER_MAUL)
+		if (e.getWeapon() == SpecialWeapon.ELDER_MAUL)
 		{
 			specialList.add(0, e);
 		}
@@ -544,13 +544,13 @@ public class DefenceTrackerPlugin extends Plugin
 	private int getScaledMagicLevel()
 	{
 		int scaledMagicLevel = (int) BossInfo.getBaseMagic(boss);
-		if(coxBosses.contains(boss))
+		if (coxBosses.contains(boss))
 		{
 			int partySize = getCoxPartySize();
-			scaledMagicLevel = scaledMagicLevel * (((int)(Math.sqrt(partySize-1)))*7+partySize+99)/100;
-			if(inCm)
+			scaledMagicLevel = scaledMagicLevel * (((int) (Math.sqrt(partySize - 1))) * 7 + partySize + 99) / 100;
+			if (inCm)
 			{
-				scaledMagicLevel = (int)(1.5*scaledMagicLevel);
+				scaledMagicLevel = (int) (1.5 * scaledMagicLevel);
 			}
 		}
 		return scaledMagicLevel;
@@ -640,9 +640,9 @@ public class DefenceTrackerPlugin extends Plugin
 				}
 				break;
 			case TONALZTICS_OF_RALOS:
-				for(int i = 0; i < hit; i++)
+				for (int i = 0; i < hit; i++)
 				{
-					bossDef -= (int)(getScaledMagicLevel() * .1);
+					bossDef -= (int) (getScaledMagicLevel() * .1);
 				}
 				break;
 		}
@@ -698,7 +698,8 @@ public class DefenceTrackerPlugin extends Plugin
 		return client.getMapRegions() != null && client.getMapRegions().length > 0 && Arrays.stream(client.getMapRegions()).anyMatch((s) -> s == 4919);
 	}
 
-	private int getCoxPartySize() {
+	private int getCoxPartySize()
+	{
 		return client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT);
 	}
 
