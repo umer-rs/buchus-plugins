@@ -35,7 +35,7 @@ enum BossInfo
 	KING_BLACK_DRAGON("King Black Dragon", 240, 240),
 	KREE_ARRA("Kree'arra", 260, 200),
 	KRIL_TSUTSAROTH("K'ril Tsutsaroth", 270, 200),
-	LIZARDMAN_SHAMAN("Lizardman shaman", 140,130),
+	LIZARDMAN_SHAMAN("Lizardman shaman", 210, 130),
 	NEX("Nex", 260, 230),
 	NYLOCAS_VASILIAS("Nylocas Vasilias", 50, 50),
 	OBELISK("<col=00ffff>Obelisk</col>", 40, 100),
