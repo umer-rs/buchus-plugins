@@ -235,7 +235,10 @@ public class CoxAnalyticsPlugin extends Plugin
 
 	private void buildPanel()
 	{
-		clientToolbar.removeNavigation(button);
+		if (button != null)
+		{
+			clientToolbar.removeNavigation(button);
+		}
 		pointsPanel = injector.getInstance(CoxPointsPanel.class);
 		pointsPanel.init();
 		BufferedImage icon = ImageUtil.loadImageResource(getClass(), "cox.png");
